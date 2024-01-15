@@ -60,7 +60,7 @@
         try {
             const payResponse = await VodaPay.V2.pay(requestId, notifyUrl, expiryTime, amount, goodsID, buyerID, goodsname, oderDescription);
 
-            if (payResponse.result.resultStatus !== 'A') {
+            if (payResponse.result.resultStatus !== 'A' || payResponse.result.resultStatus !== 'S') {
                 return {
                     results: "fail",
                     error: {
