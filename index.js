@@ -1,13 +1,6 @@
     const { VodaPay } = require('./services');
     const { config } = require('./config');
 
-    config({
-        environment: 'sandbox',
-        clientID: '2020122653946739963336',
-        merchantID: '216620000000188034591',
-        privateKeyPath: '/certificates/rsa_private_key.pem'
-    });
-
     const userInfo = async (authCode) => {
         try {
             const applyTokenResponse = await VodaPay.V2.applyToken(authCode);
@@ -26,12 +19,12 @@
             return {
                 results: "success",
                 userInfo: {
-                    userID: userInfoResponse.userId || "",
-                    username: userInfoResponse.nickName || "",
-                    firstname: userInfoResponse.userName?.firstName || "",
-                    lastname: userInfoResponse.userName?.lastName || "",
-                    email: userInfoResponse.contactInfos.find(info => info.contactType === "EMAIL")?.contactNo || "",
-                    phone: userInfoResponse.contactInfos.find(info => info.contactType === "MOBILE_PHONE")?.contactNo || ""
+                    userID: userInfoResponse.userInfo.userId || "",
+                    username: userInfoResponse.userInfo.nickName || "",
+                    firstname: userInfoResponse.userInfo.userName?.firstName || "",
+                    lastname: userInfoResponse.userInfo.userName?.lastName || "",
+                    email: userInfoResponse.userInfo.contactInfos.find(info => info.contactType === "EMAIL")?.contactNo || "",
+                    phone: userInfoResponse.userInfo.contactInfos.find(info => info.contactType === "MOBILE_PHONE")?.contactNo || ""
                 }
             };
 
@@ -56,16 +49,15 @@
         goodsname = "default",
         oderDescription = "default"
     }) => {
-
         try {
             const payResponse = await VodaPay.V2.pay(requestId, notifyUrl, expiryTime, amount, goodsID, buyerID, goodsname, oderDescription);
 
-            if (payResponse.result.resultStatus !== 'A' || payResponse.result.resultStatus !== 'S') {
+            if (payResponse.result.resultStatus !== 'A' && payResponse.result.resultStatus !== 'S') {
                 return {
                     results: "fail",
                     error: {
-                        code: applyTokenResponse.result.resultStatus,
-                        message: applyTokenResponse.result.resultMessage
+                        code: payResponse.result.resultStatus,
+                        message: payResponse.result.resultMessage
                     }
                 };
             }
@@ -102,4 +94,4 @@
         }
     }
 
-    module.exports = { userInfo, pay, paymentInfo };
+    module.exports = { config, userInfo, pay, paymentInfo };

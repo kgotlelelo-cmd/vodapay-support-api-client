@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const { DateTime } = require('luxon');
 
 const endpoints = require('../../constants/endpoints');
